@@ -8,7 +8,9 @@ function startServer({ typeDefs, resolvers }) {
 		useUnifiedTopology: true,
 	})
 
-	const server = new ApolloServer({ typeDefs, resolvers })
+	// const pubsub = new PubSub();
+
+	const server = new ApolloServer({ typeDefs, resolvers, context: { hello: 123 } })
 	server.listen().then(({ url }) => console.log(`Running on port ${url}`))
 }
 

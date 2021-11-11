@@ -1,4 +1,6 @@
 import User from '../../../models/User';
+import { USER_ADDED } from './channels';
+
 
 export default {
 	User: {
@@ -9,10 +11,23 @@ export default {
 		user: async (_, { id }) => await User.findById(id)
 	},
 	Mutation: {
-		createUser: async (_, { data }) => await User.create(data),
+		createUser: async (_, { data }, { pubSub }) => {
+			const user = await User.create(data)
+		
+			pubSub.publish(USER_ADDED, {
+				userAdded: user
+			})
+
+			return user;
+		},
 		
 		updateUser: async (_, { id, data }) => await User.findOneAndUpdate(id, data, {new: true}),
 		
 		deleteUser: async (_, { id }) => !!(await User.findOneAndDelete(id))
 	},
+	Subscription: {
+		userAdded: {
+			subscribe: (obj, args, context ) => context.hello
+		}
+	}
 };
